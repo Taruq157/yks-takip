@@ -1,0 +1,72 @@
+# ==========================================
+# Gradle and Build Output
+# ==========================================
+.gradle/
+build/
+/*/build/
+app/build/
+build_output*.txt
+captures/
+.externalNativeBuild/
+.cxx/
+
+# ==========================================
+# Android Studio / IntelliJ IDEA / Kotlin
+# ==========================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.kotlin/
+
+# ==========================================
+# VS Code
+# ==========================================
+.vscode/
+
+# ==========================================
+# System / OS Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Sensitive Information and Keys (CRITICAL)
+# ==========================================
+local.properties
+secrets.properties
+gradle.properties.local
+gradle-local.properties
+*.jks
+*.keystore
+*.pepk
+*.pk8
+*.pem
+*.der
+*.p12
+*.pfx
+private.json
+google-services.json
+google-services-desktop.json
+.env
+.env.*
+
+# ==========================================
+# Build Artifacts
+# ==========================================
+*.apk
+*.ap_
+*.aab
+*.aar
+
+# ==========================================
+# Crash Logs & Diagnostics
+# ==========================================
+*.log
+
+# ==========================================
+# Scratch / Test Files
+# ==========================================
+supabase_test.py
+test_supabase.ps1
