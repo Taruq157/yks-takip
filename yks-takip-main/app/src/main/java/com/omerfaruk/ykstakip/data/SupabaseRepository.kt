@@ -1309,6 +1309,58 @@ object SupabaseRepository {
         } finally { connection.disconnect() }
     }
 
+    suspend fun deleteQuestionLog(
+        accessToken: String,
+        dateMillis: Long
+    ): Boolean = withContext(Dispatchers.IO) {
+        val instant = java.time.Instant.ofEpochMilli(dateMillis)
+        val isoDate = java.time.OffsetDateTime.ofInstant(instant, java.time.ZoneOffset.UTC).toString()
+        val url = URL("$BASE_URL/user_question_logs?log_date=eq.$isoDate")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "DELETE"
+        connection.setRequestProperty("apikey", API_KEY)
+        connection.setRequestProperty("Authorization", "Bearer $accessToken")
+        try {
+            val code = connection.responseCode
+            code in 200..299
+        } catch (e: Exception) {
+            android.util.Log.e("SupabaseRepo", "deleteQuestionLog error", e)
+            false
+        } finally { connection.disconnect() }
+    }
+
+    suspend fun updateQuestionLog(
+        accessToken: String,
+        dateMillis: Long,
+        correctCount: Int,
+        wrongCount: Int
+    ): Boolean = withContext(Dispatchers.IO) {
+        val instant = java.time.Instant.ofEpochMilli(dateMillis)
+        val isoDate = java.time.OffsetDateTime.ofInstant(instant, java.time.ZoneOffset.UTC).toString()
+        val url = URL("$BASE_URL/user_question_logs?log_date=eq.$isoDate")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "PATCH"
+        connection.setRequestProperty("apikey", API_KEY)
+        connection.setRequestProperty("Authorization", "Bearer $accessToken")
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.doOutput = true
+
+        val body = JSONObject().apply {
+            put("correct_count", correctCount)
+            put("wrong_count", wrongCount)
+            put("updated_at", java.time.OffsetDateTime.now().toString())
+        }
+
+        try {
+            OutputStreamWriter(connection.outputStream).use { it.write(body.toString()) }
+            val code = connection.responseCode
+            code in 200..299
+        } catch (e: Exception) {
+            android.util.Log.e("SupabaseRepo", "updateQuestionLog error", e)
+            false
+        } finally { connection.disconnect() }
+    }
+
     suspend fun fetchAllQuestionLogs(accessToken: String): List<com.omerfaruk.ykstakip.data.local.QuestionLogEntity> = withContext(Dispatchers.IO) {
         val result = mutableListOf<com.omerfaruk.ykstakip.data.local.QuestionLogEntity>()
         val url = URL("$BASE_URL/user_question_logs?select=*")

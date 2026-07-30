@@ -66,6 +66,7 @@ class YksViewModel(
                     restoreCalculationsFromCloud()
                     restoreInteractionsFromCloud()
                     restoreFollowedSubjectsFromCloud()
+                    restoreQuestionLogsFromCloud()
                 }
             }
         }
@@ -777,7 +778,7 @@ class YksViewModel(
 
     fun addQuestionLog(subjectName: String, topicTitle: String, correctCount: Int, wrongCount: Int) {
         viewModelScope.launch {
-            val dateMillis = System.currentTimeMillis()
+            val dateMillis = (System.currentTimeMillis() / 1000) * 1000
             val log = com.omerfaruk.ykstakip.data.local.QuestionLogEntity(
                 date = dateMillis,
                 subjectName = subjectName,
@@ -806,14 +807,74 @@ class YksViewModel(
         }
     }
 
+    fun deleteQuestionLog(log: com.omerfaruk.ykstakip.data.local.QuestionLogEntity) {
+        viewModelScope.launch {
+            yksDao.deleteQuestionLog(log)
+            val token = accessToken.value
+            if (token != null) {
+                try {
+                    com.omerfaruk.ykstakip.data.SupabaseRepository.deleteQuestionLog(token, log.date)
+                } catch (e: Exception) {
+                    android.util.Log.e("YksViewModel", "Sync delete question log failed", e)
+                }
+            }
+        }
+    }
+
+    fun updateQuestionLog(log: com.omerfaruk.ykstakip.data.local.QuestionLogEntity, correctCount: Int, wrongCount: Int) {
+        viewModelScope.launch {
+            val updated = log.copy(correctCount = correctCount, wrongCount = wrongCount, updatedAt = System.currentTimeMillis())
+            yksDao.insertOrUpdateQuestionLog(updated)
+            val token = accessToken.value
+            if (token != null) {
+                try {
+                    com.omerfaruk.ykstakip.data.SupabaseRepository.updateQuestionLog(token, log.date, correctCount, wrongCount)
+                } catch (e: Exception) {
+                    android.util.Log.e("YksViewModel", "Sync update question log failed", e)
+                }
+            }
+        }
+    }
+
     fun restoreQuestionLogsFromCloud() {
         viewModelScope.launch {
             val token = accessToken.value ?: return@launch
             try {
+                // De-duplicate existing local database logs first (within 5 seconds threshold)
+                val localLogs = yksDao.getAllQuestionLogs().first()
+                val toDelete = mutableListOf<com.omerfaruk.ykstakip.data.local.QuestionLogEntity>()
+                val visited = mutableListOf<com.omerfaruk.ykstakip.data.local.QuestionLogEntity>()
+                for (log in localLogs) {
+                    val duplicate = visited.find { 
+                        it.subjectName == log.subjectName && 
+                        it.topicTitle == log.topicTitle && 
+                        Math.abs(it.date - log.date) < 5000 
+                    }
+                    if (duplicate != null) {
+                        toDelete.add(log)
+                    } else {
+                        visited.add(log)
+                    }
+                }
+                for (log in toDelete) {
+                    yksDao.deleteQuestionLog(log)
+                }
+
                 val cloudLogs = com.omerfaruk.ykstakip.data.SupabaseRepository.fetchAllQuestionLogs(token)
                 if (cloudLogs.isNotEmpty()) {
+                    val refreshedLocalLogs = yksDao.getAllQuestionLogs().first()
                     for (log in cloudLogs) {
-                        yksDao.insertOrUpdateQuestionLog(log)
+                        val existing = refreshedLocalLogs.find { 
+                            it.subjectName == log.subjectName && 
+                            it.topicTitle == log.topicTitle && 
+                            Math.abs(it.date - log.date) < 5000 
+                        }
+                        if (existing != null) {
+                            val updated = log.copy(id = existing.id)
+                            yksDao.insertOrUpdateQuestionLog(updated)
+                        } else {
+                            yksDao.insertOrUpdateQuestionLog(log)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -857,7 +918,6 @@ class YksViewModel(
                 val tytSosyalNet = getNet(inputs, "TYT Sosyal")
                 val tytMatNet = getNet(inputs, "TYT Matematik")
                 val tytFenNet = getNet(inputs, "TYT Fen")
-                val tytNetTotal = tytTurkceNet + tytSosyalNet + tytMatNet + tytFenNet
 
                 val aytMatNet = getNet(inputs, "AYT Matematik")
                 val aytFizikNet = getNet(inputs, "AYT Fizik")
@@ -871,33 +931,79 @@ class YksViewModel(
                 val aytFelsefeNet = getNet(inputs, "AYT Felsefe Grb.")
                 val aytDinNet = getNet(inputs, "AYT Din")
 
-                val tytScore = clampScore(100f + tytTurkceNet * 3.3333f + tytSosyalNet * 3.3333f + tytMatNet * 3.3333f + tytFenNet * 3.3333f)
-                val sayScore = clampScore(100f + tytNetTotal * 1.3333f + aytMatNet * 3.0f + aytFizikNet * 2.857f + aytKimyaNet * 3.077f + aytBiyolojiNet * 3.077f)
-                val eaScore = clampScore(100f + tytNetTotal * 1.3333f + aytMatNet * 3.0f + aytEdebiyatNet * 3.0f + aytTarih1Net * 2.8f + aytCografya1Net * 3.333f)
-                val sozScore = clampScore(100f + tytNetTotal * 1.3333f + aytEdebiyatNet * 3.0f + aytTarih1Net * 2.8f + aytCografya1Net * 3.333f + aytTarih2Net * 2.91f + aytCografya2Net * 2.91f + aytFelsefeNet * 3.0f + aytDinNet * 3.33f)
-
-                val obpContribution = obp * 0.6f
-                val yTytScore = tytScore + obpContribution
-                val ySayScore = sayScore + obpContribution
-                val yEaScore = eaScore + obpContribution
-                val ySozScore = sozScore + obpContribution
-
                 val years = listOf(2023, 2024, 2025)
                 val resultsObj = JSONObject()
                 val yigilmaList = _yigilmaData.value
 
                 for (year in years) {
                     val yearObj = JSONObject()
-                    
+
+                    val tytScore = when (year) {
+                        2023 -> clampScore(141.898f + tytTurkceNet * 2.890f + tytSosyalNet * 3.024f + tytMatNet * 3.021f + tytFenNet * 3.057f)
+                        2024 -> clampScore(142.15f + tytTurkceNet * 2.91f + tytSosyalNet * 2.98f + tytMatNet * 2.99f + tytFenNet * 3.02f)
+                        else -> clampScore(142.0f + tytTurkceNet * 2.90f + tytSosyalNet * 3.00f + tytMatNet * 3.00f + tytFenNet * 3.00f)
+                    }
+
+                    val sayScore = when (year) {
+                        2023 -> {
+                            val aytScore = clampScore(118.868f + aytMatNet * 4.70f + aytFizikNet * 4.13f + aytKimyaNet * 4.90f + aytBiyolojiNet * 5.17f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                        2024 -> {
+                            val aytScore = clampScore(119.15f + aytMatNet * 4.80f + aytFizikNet * 4.50f + aytKimyaNet * 4.80f + aytBiyolojiNet * 4.80f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                        else -> {
+                            val aytScore = clampScore(119.00f + aytMatNet * 5.00f + aytFizikNet * 4.76f + aytKimyaNet * 5.128f + aytBiyolojiNet * 5.128f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                    }
+
+                    val eaScore = when (year) {
+                        2023 -> {
+                            val aytScore = clampScore(118.868f + aytMatNet * 4.70f + aytEdebiyatNet * 4.70f + aytTarih1Net * 4.38f + aytCografya1Net * 5.22f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                        2024 -> {
+                            val aytScore = clampScore(119.15f + aytMatNet * 4.80f + aytEdebiyatNet * 4.80f + aytTarih1Net * 4.50f + aytCografya1Net * 5.20f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                        else -> {
+                            val aytScore = clampScore(119.00f + aytMatNet * 5.00f + aytEdebiyatNet * 5.00f + aytTarih1Net * 4.667f + aytCografya1Net * 5.556f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                    }
+
+                    val sozScore = when (year) {
+                        2023 -> {
+                            val aytScore = clampScore(118.868f + aytEdebiyatNet * 4.70f + aytTarih1Net * 4.38f + aytCografya1Net * 5.22f + aytTarih2Net * 4.57f + aytCografya2Net * 4.57f + aytFelsefeNet * 4.70f + aytDinNet * 5.22f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                        2024 -> {
+                            val aytScore = clampScore(119.15f + aytEdebiyatNet * 4.80f + aytTarih1Net * 4.50f + aytCografya1Net * 5.20f + aytTarih2Net * 4.70f + aytCografya2Net * 4.70f + aytFelsefeNet * 4.80f + aytDinNet * 5.20f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                        else -> {
+                            val aytScore = clampScore(119.00f + aytEdebiyatNet * 5.00f + aytTarih1Net * 4.667f + aytCografya1Net * 5.556f + aytTarih2Net * 4.85f + aytCografya2Net * 4.85f + aytFelsefeNet * 5.00f + aytDinNet * 5.55f)
+                            clampScore(tytScore * 0.4f + aytScore * 0.6f)
+                        }
+                    }
+
+                    val obpContribution = obp * 0.6f
+                    val yTytScore = tytScore + obpContribution
+                    val ySayScore = sayScore + obpContribution
+                    val yEaScore = eaScore + obpContribution
+                    val ySozScore = sozScore + obpContribution
+
                     val tytRank = interpolateRank(yigilmaList, "TYT", year, tytScore, false)
                     val yTytRank = interpolateRank(yigilmaList, "TYT", year, yTytScore, true)
-                    
+
                     val sayRank = interpolateRank(yigilmaList, "SAY", year, sayScore, false)
                     val ySayRank = interpolateRank(yigilmaList, "SAY", year, ySayScore, true)
-                    
+
                     val eaRank = interpolateRank(yigilmaList, "EA", year, eaScore, false)
                     val yEaRank = interpolateRank(yigilmaList, "EA", year, yEaScore, true)
-                    
+
                     val sozRank = interpolateRank(yigilmaList, "SOZ", year, sozScore, false)
                     val ySozRank = interpolateRank(yigilmaList, "SOZ", year, ySozScore, true)
 

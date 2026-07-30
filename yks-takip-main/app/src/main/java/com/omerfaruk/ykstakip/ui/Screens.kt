@@ -250,74 +250,152 @@ fun MainDashboard(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Header: Logo, Günaydın, DisplayName, Notifications
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(Color(0xFFF65E72)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "YK",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 20.sp,
+                        color = Color.White
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Günaydın,",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = displayName,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                IconButton(onClick = { showNotifIsland = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Bildirimler",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            // Combined Countdown Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
-                    .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    .height(130.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                ),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Row(
-                    modifier = Modifier.padding(20.dp).fillMaxSize(),
+                    modifier = Modifier.padding(16.dp).fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "Selam, $displayName!", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(text = "Alan: $major", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Sınava",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                            fontWeight = FontWeight.Medium
+                        )
+                        Row(verticalAlignment = Alignment.Bottom) {
+                            Text(
+                                text = daysLeftTotal.toString(),
+                                fontSize = 36.sp,
+                                fontWeight = FontWeight.Black,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = " gün kaldı",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Alan: $major",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                     
                     Box(
                         contentAlignment = Alignment.Center, 
-                        modifier = Modifier.size(110.dp).clickable { showNotifIsland = true }
+                        modifier = Modifier.size(90.dp).clickable { showNotifIsland = true }
                     ) {
                         CircularProgressIndicator(
                             progress = { progressToExam },
                             modifier = Modifier.fillMaxSize(),
-                            strokeWidth = 10.dp,
-                            trackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
+                            strokeWidth = 8.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
                             strokeCap = StrokeCap.Round
                         )
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             if (notifSettings?.displayFormat == "MonthsDays") {
                                 Text(
-                                    text = "$monthsPart Ay",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textAlign = TextAlign.Center
-                                )
-                                Text(
-                                    text = "$daysPart Gün",
+                                    text = "$monthsPart A",
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textAlign = TextAlign.Center
-                                )
-                            } else {
-                                Text(
-                                    text = daysLeftTotal.toString(),
-                                    fontSize = 24.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = MaterialTheme.colorScheme.primary
                                 )
-                                Text(text = "Gün", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                                Text(
+                                    text = "$daysPart G",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            } else {
+                                Text(
+                                    text = "%${(progressToExam * 100).toInt()}",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
                         }
                     }
                 }
             }
 
+            // Genel İlerleme Card
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .shadow(8.dp, RoundedCornerShape(20.dp)),
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.08f)
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -325,42 +403,32 @@ fun MainDashboard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Genel Tamamlanma", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text(text = "%${(overallProgress * 100).toInt()}", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary, fontSize = 20.sp)
+                        Text(text = "Genel İlerleme", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(
+                            text = "%${(overallProgress * 100).toInt()}", 
+                            fontWeight = FontWeight.Black, 
+                            color = MaterialTheme.colorScheme.primary, 
+                            fontSize = 18.sp
+                        )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     LinearProgressIndicator(
                         progress = { overallProgress },
-                        modifier = Modifier.fillMaxWidth().height(12.dp).clip(CircleShape),
+                        modifier = Modifier.fillMaxWidth().height(10.dp).clip(CircleShape),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                         strokeCap = StrokeCap.Round
                     )
-                    val totalAllTime = allQuestionLogs.sumOf { it.correctCount + it.wrongCount }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    androidx.compose.material3.HorizontalDivider(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Toplam Çözülen Soru",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = "$totalAllTime Soru",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
+                    Text(
+                        text = "Derslerin konu takibinin %${(overallProgress * 100).toInt()}'si tamamlandı.",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 
+            // Günlük Soru Girdisi Card
             val todayStart = java.time.LocalDate.now().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
             val todayLogs = allQuestionLogs.filter { it.date >= todayStart }
             val todayCorrect = todayLogs.sumOf { it.correctCount }
@@ -368,125 +436,204 @@ fun MainDashboard(
             val todayTotal = todayCorrect + todayWrong
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .shadow(8.dp, RoundedCornerShape(20.dp)),
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
-                ),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 border = androidx.compose.foundation.BorderStroke(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.08f)
                 )
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "Bugün Çözülen Sorular",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                text = "Toplam: $todayTotal",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = "Doğru: $todayCorrect",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2E7D32)
-                            )
-                            Text(
-                                text = "Yanlış: $todayWrong",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.error
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Günlük Soru Girdisi", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Bilgi",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                modifier = Modifier.size(16.dp)
                             )
                         }
+                        
+                        OutlinedButton(
+                            onClick = { showAddQuestionDialog = true },
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Soru Ekle", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        }
                     }
-                    Button(
-                        onClick = { showAddQuestionDialog = true },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                    
+                    Spacer(modifier = Modifier.height(14.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Soru Ekle",
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = "Soru Ekle", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        // Doğru
+                        val greenColor = Color(0xFF34D399)
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = greenColor.copy(alpha = 0.08f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, greenColor.copy(alpha = 0.15f))
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = greenColor, modifier = Modifier.size(24.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(text = "$todayCorrect", fontSize = 18.sp, fontWeight = FontWeight.Black, color = greenColor)
+                                Text(text = "Doğru", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                        
+                        // Yanlış
+                        val redColor = Color(0xFFF87171)
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = redColor.copy(alpha = 0.08f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, redColor.copy(alpha = 0.15f))
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(imageVector = Icons.Default.Cancel, contentDescription = null, tint = redColor, modifier = Modifier.size(24.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(text = "$todayWrong", fontSize = 18.sp, fontWeight = FontWeight.Black, color = redColor)
+                                Text(text = "Yanlış", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                        
+                        // Net / Soru
+                        val blueColor = Color(0xFF60A5FA)
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = blueColor.copy(alpha = 0.08f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, blueColor.copy(alpha = 0.15f))
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(imageVector = Icons.Default.RemoveCircle, contentDescription = null, tint = blueColor, modifier = Modifier.size(24.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(text = "$todayTotal", fontSize = 18.sp, fontWeight = FontWeight.Black, color = blueColor)
+                                Text(text = "Soru", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = Color.Transparent,
-                divider = {},
-                indicator = { tabPositions ->
-                    Box(
-                        Modifier
-                            .tabIndicatorOffset(tabPositions[selectedTab])
-                            .height(4.dp)
-                            .padding(horizontal = 24.dp)
-                            .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                            .background(MaterialTheme.colorScheme.primary)
-                    )
-                }
+            // Tab Selector Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTab == index,
+                    val isSelected = selectedTab == index
+                    Card(
                         onClick = { selectedTab = index },
-                        text = {
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(
+                            width = 1.dp,
+                            color = if (isSelected) Color.Transparent else MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Book,
+                                contentDescription = null,
+                                tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = title,
-                                fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 16.sp
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                                fontSize = 14.sp
                             )
                         }
+                    }
+                }
+            }
+
+            // Dersler Title and Total Time Header
+            val totalStudyDurationSeconds = allStudyTimes.sumOf { it.durationSeconds }
+            val totalHours = totalStudyDurationSeconds / 3600
+            val totalMinutes = (totalStudyDurationSeconds % 3600) / 60
+            val totalSeconds = totalStudyDurationSeconds % 60
+            val formattedTotalTime = String.format("%02d:%02d:%02d", totalHours, totalMinutes, totalSeconds)
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "Dersler", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Schedule,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Toplam Çalışma Süresi ",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = formattedTotalTime,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
+            // Subjects list in Column
             val filteredSubjects = if (selectedTab == 0) {
                 subjects.filter { it.category == "TYT" }
             } else {
                 subjects.filter { it.category.startsWith("AYT") }
             }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(bottom = 80.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 80.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(filteredSubjects) { subject ->
+                filteredSubjects.forEach { subject ->
                     val studyDurationSeconds = allStudyTimes.filter { it.subjectName == subject.name }.sumOf { it.durationSeconds }
                     SubjectCard(subject, studyDurationSeconds) { onSubjectClick(subject.name, subject.category) }
                 }
@@ -850,35 +997,123 @@ fun AddQuestionDialog(
 
 @Composable
 fun SubjectCard(subject: SubjectUiModel, studyDurationSeconds: Long, onClick: () -> Unit) {
+    // Choose dynamic initials and icon colors
+    val (initials, circleColor) = when (subject.name) {
+        "Türkçe", "TYT Türkçe", "AYT Türkçe" -> "Tt" to Color(0xFFF65E72)
+        "Matematik", "Matematik-1", "Matematik-2", "TYT Matematik", "AYT Matematik", "Geometri", "AYT Geometri" -> "√x" to Color(0xFF60A5FA)
+        "Fizik", "AYT Fizik" -> "Fz" to Color(0xFF9C27B0)
+        "Kimya", "AYT Kimya" -> "Km" to Color(0xFF34D399)
+        "Biyoloji", "AYT Biyoloji" -> "By" to Color(0xFFFF9800)
+        "Edebiyat", "AYT Edebiyat" -> "Ed" to Color(0xFFE91E63)
+        "Tarih", "AYT Tarih" -> "Tr" to Color(0xFF8B5CF6)
+        "Coğrafya", "AYT Coğrafya" -> "Cğ" to Color(0xFF10B981)
+        "Felsefe", "Felsefe Grubu", "AYT Felsefe Grubu" -> "Fl" to Color(0xFF3F51B5)
+        "Din Kültürü", "Din", "AYT Din" -> "Dn" to Color(0xFF009688)
+        else -> {
+            val letters = if (subject.name.length >= 2) subject.name.take(2) else subject.name
+            letters to MaterialTheme.colorScheme.primary
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.08f)
+        )
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp).fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(text = subject.name, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 1, modifier = Modifier.weight(1f))
-                if (studyDurationSeconds > 0) {
-                    val h = studyDurationSeconds / 3600
-                    val m = (studyDurationSeconds % 3600) / 60
-                    val s = studyDurationSeconds % 60
-                    Text(text = String.format(java.util.Locale.getDefault(), "%02d:%02d:%02d", h, m, s), fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.SemiBold)
-                }
+            // Left Circle Icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(circleColor.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = initials,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = circleColor
+                )
             }
-            Column {
-                Text(text = "%${(subject.progress * 100).toInt()}", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(4.dp))
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            // Center Column (Name, Progress bar)
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = subject.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "%${(subject.progress * 100).toInt()}",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = circleColor
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
                 LinearProgressIndicator(
                     progress = { subject.progress },
-                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(CircleShape),
+                    color = circleColor,
+                    trackColor = circleColor.copy(alpha = 0.15f),
                     strokeCap = StrokeCap.Round
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            // Right Column (Time & Chevron)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val h = studyDurationSeconds / 3600
+                val m = (studyDurationSeconds % 3600) / 60
+                val s = studyDurationSeconds % 60
+                val timeStr = String.format(java.util.Locale.getDefault(), "%02d:%02d:%02d", h, m, s)
+                
+                Icon(
+                    imageVector = Icons.Default.Schedule,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.size(12.dp)
+                )
+                Text(
+                    text = timeStr,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
@@ -5616,8 +5851,12 @@ fun formatRank(rank: Int): String {
 
 data class CalculationResultPreview(
     val obp: Float,
-    val scores: Map<String, Float>,
-    val yScores: Map<String, Float>,
+    val scores2023: Map<String, Float>,
+    val yScores2023: Map<String, Float>,
+    val scores2024: Map<String, Float>,
+    val yScores2024: Map<String, Float>,
+    val scores2025: Map<String, Float>,
+    val yScores2025: Map<String, Float>,
     val rawRankings2023: Map<String, Int>,
     val yRankings2023: Map<String, Int>,
     val rawRankings2024: Map<String, Int>,
@@ -5647,7 +5886,6 @@ fun previewCalculation(
     val tytSosyalNet = getNetVal("TYT Sosyal")
     val tytMatNet = getNetVal("TYT Matematik")
     val tytFenNet = getNetVal("TYT Fen")
-    val tytNetTotal = tytTurkceNet + tytSosyalNet + tytMatNet + tytFenNet
 
     val aytMatNet = getNetVal("AYT Matematik")
     val aytFizikNet = getNetVal("AYT Fizik")
@@ -5663,16 +5901,82 @@ fun previewCalculation(
 
     val clamp = { v: Float -> v.coerceIn(100f, 500f) }
 
-    val tytScore = clamp(100f + tytTurkceNet * 3.3333f + tytSosyalNet * 3.3333f + tytMatNet * 3.3333f + tytFenNet * 3.3333f)
-    val sayScore = clamp(100f + tytNetTotal * 1.3333f + aytMatNet * 3.0f + aytFizikNet * 2.857f + aytKimyaNet * 3.077f + aytBiyolojiNet * 3.077f)
-    val eaScore = clamp(100f + tytNetTotal * 1.3333f + aytMatNet * 3.0f + aytEdebiyatNet * 3.0f + aytTarih1Net * 2.8f + aytCografya1Net * 3.333f)
-    val sozScore = clamp(100f + tytNetTotal * 1.3333f + aytEdebiyatNet * 3.0f + aytTarih1Net * 2.8f + aytCografya1Net * 3.333f + aytTarih2Net * 2.91f + aytCografya2Net * 2.91f + aytFelsefeNet * 3.0f + aytDinNet * 3.33f)
+    val calcTyt = { year: Int ->
+        when (year) {
+            2023 -> clamp(141.898f + tytTurkceNet * 2.890f + tytSosyalNet * 3.024f + tytMatNet * 3.021f + tytFenNet * 3.057f)
+            2024 -> clamp(142.15f + tytTurkceNet * 2.91f + tytSosyalNet * 2.98f + tytMatNet * 2.99f + tytFenNet * 3.02f)
+            else -> clamp(142.0f + tytTurkceNet * 2.90f + tytSosyalNet * 3.00f + tytMatNet * 3.00f + tytFenNet * 3.00f)
+        }
+    }
+
+    val calcSay = { tytScore: Float, year: Int ->
+        when (year) {
+            2023 -> {
+                val aytScore = clamp(118.868f + aytMatNet * 4.70f + aytFizikNet * 4.13f + aytKimyaNet * 4.90f + aytBiyolojiNet * 5.17f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+            2024 -> {
+                val aytScore = clamp(119.15f + aytMatNet * 4.80f + aytFizikNet * 4.50f + aytKimyaNet * 4.80f + aytBiyolojiNet * 4.80f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+            else -> {
+                val aytScore = clamp(119.00f + aytMatNet * 5.00f + aytFizikNet * 4.76f + aytKimyaNet * 5.128f + aytBiyolojiNet * 5.128f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+        }
+    }
+    val calcEa = { tytScore: Float, year: Int ->
+        when (year) {
+            2023 -> {
+                val aytScore = clamp(118.868f + aytMatNet * 4.70f + aytEdebiyatNet * 4.70f + aytTarih1Net * 4.38f + aytCografya1Net * 5.22f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+            2024 -> {
+                val aytScore = clamp(119.15f + aytMatNet * 4.80f + aytEdebiyatNet * 4.80f + aytTarih1Net * 4.50f + aytCografya1Net * 5.20f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+            else -> {
+                val aytScore = clamp(119.00f + aytMatNet * 5.00f + aytEdebiyatNet * 5.00f + aytTarih1Net * 4.667f + aytCografya1Net * 5.556f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+        }
+    }
+    val calcSoz = { tytScore: Float, year: Int ->
+        when (year) {
+            2023 -> {
+                val aytScore = clamp(118.868f + aytEdebiyatNet * 4.70f + aytTarih1Net * 4.38f + aytCografya1Net * 5.22f + aytTarih2Net * 4.57f + aytCografya2Net * 4.57f + aytFelsefeNet * 4.70f + aytDinNet * 5.22f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+            2024 -> {
+                val aytScore = clamp(119.15f + aytEdebiyatNet * 4.80f + aytTarih1Net * 4.50f + aytCografya1Net * 5.20f + aytTarih2Net * 4.70f + aytCografya2Net * 4.70f + aytFelsefeNet * 4.80f + aytDinNet * 5.20f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+            else -> {
+                val aytScore = clamp(119.00f + aytEdebiyatNet * 5.00f + aytTarih1Net * 4.667f + aytCografya1Net * 5.556f + aytTarih2Net * 4.85f + aytCografya2Net * 4.85f + aytFelsefeNet * 5.00f + aytDinNet * 5.55f)
+                clamp(tytScore * 0.4f + aytScore * 0.6f)
+            }
+        }
+    }
 
     val obpContribution = obp * 0.6f
-    val yTytScore = tytScore + obpContribution
-    val ySayScore = sayScore + obpContribution
-    val yEaScore = eaScore + obpContribution
-    val ySozScore = sozScore + obpContribution
+
+    // 2023 Scores
+    val tyt2023 = calcTyt(2023)
+    val say2023 = calcSay(tyt2023, 2023)
+    val ea2023 = calcEa(tyt2023, 2023)
+    val soz2023 = calcSoz(tyt2023, 2023)
+
+    // 2024 Scores
+    val tyt2024 = calcTyt(2024)
+    val say2024 = calcSay(tyt2024, 2024)
+    val ea2024 = calcEa(tyt2024, 2024)
+    val soz2024 = calcSoz(tyt2024, 2024)
+
+    // 2025 Scores
+    val tyt2025 = calcTyt(2025)
+    val say2025 = calcSay(tyt2025, 2025)
+    val ea2025 = calcEa(tyt2025, 2025)
+    val soz2025 = calcSoz(tyt2025, 2025)
 
     val interp = { type: String, year: Int, score: Float, isPlacement: Boolean ->
         val actualPuanTuru = if (isPlacement) {
@@ -5683,11 +5987,10 @@ fun previewCalculation(
         } else {
             type
         }
-
-        val points = yigilmaList.filter { it.puanTuru.equals(actualPuanTuru, ignoreCase = true) && it.yil == year }
+        val matchedPoints = yigilmaList.filter { it.puanTuru.equals(actualPuanTuru, ignoreCase = true) && it.yil == year }
             .sortedBy { it.puan }
 
-        if (points.isEmpty()) {
+        if (matchedPoints.isEmpty()) {
             val maxPoints = if (isPlacement) 560f else 500f
             val minPoints = 100f
             val pct = ((maxPoints - score) / (maxPoints - minPoints)).coerceIn(0f, 1f)
@@ -5709,15 +6012,15 @@ fun previewCalculation(
         } else {
             val target = score
 
-            if (target <= points.first().puan) {
-                points.first().siralama
-            } else if (target >= points.last().puan) {
-                points.last().siralama
+            if (target <= matchedPoints.first().puan) {
+                matchedPoints.first().siralama
+            } else if (target >= matchedPoints.last().puan) {
+                matchedPoints.last().siralama
             } else {
-                var res = points.last().siralama
-                for (i in 0 until points.size - 1) {
-                    val pA = points[i]
-                    val pB = points[i + 1]
+                var res = matchedPoints.last().siralama
+                for (i in 0 until matchedPoints.size - 1) {
+                    val pA = matchedPoints[i]
+                    val pB = matchedPoints[i + 1]
                     if (target >= pA.puan && target <= pB.puan) {
                         val diffPuan = pB.puan - pA.puan
                         val diffSiralama = pB.siralama - pA.siralama
@@ -5732,14 +6035,18 @@ fun previewCalculation(
 
     return CalculationResultPreview(
         obp = obp,
-        scores = mapOf("TYT" to tytScore, "SAY" to sayScore, "EA" to eaScore, "SOZ" to sozScore),
-        yScores = mapOf("TYT" to yTytScore, "SAY" to ySayScore, "EA" to yEaScore, "SOZ" to ySozScore),
-        rawRankings2023 = mapOf("TYT" to interp("TYT", 2023, tytScore, false), "SAY" to interp("SAY", 2023, sayScore, false), "EA" to interp("EA", 2023, eaScore, false), "SOZ" to interp("SOZ", 2023, sozScore, false)),
-        yRankings2023 = mapOf("TYT" to interp("TYT", 2023, yTytScore, true), "SAY" to interp("SAY", 2023, ySayScore, true), "EA" to interp("EA", 2023, yEaScore, true), "SOZ" to interp("SOZ", 2023, ySozScore, true)),
-        rawRankings2024 = mapOf("TYT" to interp("TYT", 2024, tytScore, false), "SAY" to interp("SAY", 2024, sayScore, false), "EA" to interp("EA", 2024, eaScore, false), "SOZ" to interp("SOZ", 2024, sozScore, false)),
-        yRankings2024 = mapOf("TYT" to interp("TYT", 2024, yTytScore, true), "SAY" to interp("SAY", 2024, ySayScore, true), "EA" to interp("EA", 2024, yEaScore, true), "SOZ" to interp("SOZ", 2024, ySozScore, true)),
-        rawRankings2025 = mapOf("TYT" to interp("TYT", 2025, tytScore, false), "SAY" to interp("SAY", 2025, sayScore, false), "EA" to interp("EA", 2025, eaScore, false), "SOZ" to interp("SOZ", 2025, sozScore, false)),
-        yRankings2025 = mapOf("TYT" to interp("TYT", 2025, yTytScore, true), "SAY" to interp("SAY", 2025, ySayScore, true), "EA" to interp("EA", 2025, yEaScore, true), "SOZ" to interp("SOZ", 2025, ySozScore, true))
+        scores2023 = mapOf("TYT" to tyt2023, "SAY" to say2023, "EA" to ea2023, "SOZ" to soz2023),
+        yScores2023 = mapOf("TYT" to tyt2023 + obpContribution, "SAY" to say2023 + obpContribution, "EA" to ea2023 + obpContribution, "SOZ" to soz2023 + obpContribution),
+        scores2024 = mapOf("TYT" to tyt2024, "SAY" to say2024, "EA" to ea2024, "SOZ" to soz2024),
+        yScores2024 = mapOf("TYT" to tyt2024 + obpContribution, "SAY" to say2024 + obpContribution, "EA" to ea2024 + obpContribution, "SOZ" to soz2024 + obpContribution),
+        scores2025 = mapOf("TYT" to tyt2025, "SAY" to say2025, "EA" to ea2025, "SOZ" to soz2025),
+        yScores2025 = mapOf("TYT" to tyt2025 + obpContribution, "SAY" to say2025 + obpContribution, "EA" to ea2025 + obpContribution, "SOZ" to soz2025 + obpContribution),
+        rawRankings2023 = mapOf("TYT" to interp("TYT", 2023, tyt2023, false), "SAY" to interp("SAY", 2023, say2023, false), "EA" to interp("EA", 2023, ea2023, false), "SOZ" to interp("SOZ", 2023, soz2023, false)),
+        yRankings2023 = mapOf("TYT" to interp("TYT", 2023, tyt2023 + obpContribution, true), "SAY" to interp("SAY", 2023, say2023 + obpContribution, true), "EA" to interp("EA", 2023, ea2023 + obpContribution, true), "SOZ" to interp("SOZ", 2023, soz2023 + obpContribution, true)),
+        rawRankings2024 = mapOf("TYT" to interp("TYT", 2024, tyt2024, false), "SAY" to interp("SAY", 2024, say2024, false), "EA" to interp("EA", 2024, ea2024, false), "SOZ" to interp("SOZ", 2024, soz2024, false)),
+        yRankings2024 = mapOf("TYT" to interp("TYT", 2024, tyt2024 + obpContribution, true), "SAY" to interp("SAY", 2024, say2024 + obpContribution, true), "EA" to interp("EA", 2024, ea2024 + obpContribution, true), "SOZ" to interp("SOZ", 2024, soz2024 + obpContribution, true)),
+        rawRankings2025 = mapOf("TYT" to interp("TYT", 2025, tyt2025, false), "SAY" to interp("SAY", 2025, say2025, false), "EA" to interp("EA", 2025, ea2025, false), "SOZ" to interp("SOZ", 2025, soz2025, false)),
+        yRankings2025 = mapOf("TYT" to interp("TYT", 2025, tyt2025 + obpContribution, true), "SAY" to interp("SAY", 2025, say2025 + obpContribution, true), "EA" to interp("EA", 2025, ea2025 + obpContribution, true), "SOZ" to interp("SOZ", 2025, soz2025 + obpContribution, true))
     )
 }
 
@@ -6083,6 +6390,16 @@ fun ResultDialog(
                     "2024" -> preview.yRankings2024
                     else -> preview.yRankings2025
                 }
+                val yearScores = when (currentYear) {
+                    "2023" -> preview.scores2023
+                    "2024" -> preview.scores2024
+                    else -> preview.scores2025
+                }
+                val yearYScores = when (currentYear) {
+                    "2023" -> preview.yScores2023
+                    "2024" -> preview.yScores2024
+                    else -> preview.yScores2025
+                }
                 
                 Text(
                     text = "$currentYear Yılı Tahmini Sıralamaları",
@@ -6093,8 +6410,8 @@ fun ResultDialog(
                 )
                 
                 listOf("TYT", "SAY", "EA", "SOZ").forEach { type ->
-                    val rawScore = preview.scores[type] ?: 100f
-                    val yScore = preview.yScores[type] ?: 100f
+                    val rawScore = yearScores[type] ?: 100f
+                    val yScore = yearYScores[type] ?: 100f
                     val rawRank = rawRanks[type] ?: 0
                     val yRank = yRanks[type] ?: 0
                     
@@ -7245,8 +7562,28 @@ fun QuestionStatisticsGraph(
 ) {
     val textMeasurer = rememberTextMeasurer()
     val labelStyle = TextStyle(fontSize = 10.sp, color = Color.Gray)
+    val formatter = remember {
+        java.time.format.DateTimeFormatter.ofPattern("d MMM", java.util.Locale("tr"))
+    }
     
-    val sorted = remember(results) { results.sortedBy { it.date } }
+    val sorted = remember(results) {
+        results.groupBy { log ->
+            val instant = java.time.Instant.ofEpochMilli(log.date)
+            java.time.LocalDate.ofInstant(instant, java.time.ZoneId.systemDefault())
+        }.map { (date, logs) ->
+            val totalCorrect = logs.sumOf { it.correctCount }
+            val totalWrong = logs.sumOf { it.wrongCount }
+            val dayMillis = date.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+            com.omerfaruk.ykstakip.data.local.QuestionLogEntity(
+                id = 0,
+                date = dayMillis,
+                subjectName = "",
+                topicTitle = "",
+                correctCount = totalCorrect,
+                wrongCount = totalWrong
+            )
+        }.sortedBy { it.date }
+    }
     
     Canvas(
         modifier = Modifier
@@ -7318,6 +7655,25 @@ fun QuestionStatisticsGraph(
             drawCircle(color = blueColor, radius = 4.dp.toPx(), center = Offset(x, totalY))
             drawCircle(color = greenColor, radius = 4.dp.toPx(), center = Offset(x, correctY))
             drawCircle(color = redColor, radius = 4.dp.toPx(), center = Offset(x, wrongY))
+
+            // X-axis date label
+            val dateStr = java.time.LocalDate.ofInstant(
+                java.time.Instant.ofEpochMilli(result.date),
+                java.time.ZoneId.systemDefault()
+            ).format(formatter)
+
+            val textLayoutResult = textMeasurer.measure(
+                text = dateStr,
+                style = labelStyle
+            )
+            val textWidth = textLayoutResult.size.width
+            val shouldDrawLabel = sorted.size <= 7 || index == 0 || index == sorted.size - 1 || index == sorted.size / 2
+            if (shouldDrawLabel) {
+                drawText(
+                    textLayoutResult = textLayoutResult,
+                    topLeft = Offset(x - textWidth / 2, graphHeight + 4.dp.toPx())
+                )
+            }
         }
 
         if (sorted.size > 1) {
@@ -7340,6 +7696,105 @@ fun QuestionStatisticsGraph(
     }
 }
 
+@Composable
+fun EditQuestionDialog(
+    log: com.omerfaruk.ykstakip.data.local.QuestionLogEntity,
+    onDismiss: () -> Unit,
+    onSave: (Int, Int) -> Unit
+) {
+    var correctStr by remember { mutableStateOf(log.correctCount.toString()) }
+    var wrongStr by remember { mutableStateOf(log.wrongCount.toString()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Kaydı Düzenle", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("${log.subjectName} - ${log.topicTitle}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                
+                OutlinedTextField(
+                    value = correctStr,
+                    onValueChange = { correctStr = it },
+                    label = { Text("Doğru Sayısı") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = wrongStr,
+                    onValueChange = { wrongStr = it },
+                    label = { Text("Yanlış Sayısı") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val correct = correctStr.toIntOrNull() ?: 0
+                    val wrong = wrongStr.toIntOrNull() ?: 0
+                    onSave(correct, wrong)
+                }
+            ) {
+                Text("Kaydet", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("İptal")
+            }
+        }
+    )
+}
+
+@Composable
+fun QuestionLogItem(
+    log: com.omerfaruk.ykstakip.data.local.QuestionLogEntity,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val formatter = remember {
+        java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm", java.util.Locale("tr"))
+    }
+    val dateStr = java.time.LocalDateTime.ofInstant(
+        java.time.Instant.ofEpochMilli(log.date),
+        java.time.ZoneId.systemDefault()
+    ).format(formatter)
+
+    Card(
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(log.subjectName, fontSize = 11.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(log.topicTitle, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("${log.correctCount} Doğru", fontSize = 12.sp, color = Color(0xFF2E7D32), fontWeight = FontWeight.SemiBold)
+                    Text("${log.wrongCount} Yanlış", fontSize = 12.sp, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.SemiBold)
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(dateStr, fontSize = 10.sp, color = Color.Gray)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                IconButton(onClick = onEdit) {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Düzenle", tint = Color.Gray, modifier = Modifier.size(20.dp))
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Sil", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionTrackingScreen(
@@ -7351,6 +7806,8 @@ fun QuestionTrackingScreen(
     val userInfo by viewModel.userInfo.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedFilter by remember { mutableStateOf(QuestionFilter.ALL_TIME) }
+    var editingLog by remember { mutableStateOf<com.omerfaruk.ykstakip.data.local.QuestionLogEntity?>(null) }
+    var deletingLog by remember { mutableStateOf<com.omerfaruk.ykstakip.data.local.QuestionLogEntity?>(null) }
 
     var filterSubject by remember { mutableStateOf("Tümü") }
     var filterTopic by remember { mutableStateOf("Tümü") }
@@ -7446,7 +7903,8 @@ fun QuestionTrackingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Stats TabRow
@@ -7608,7 +8066,7 @@ fun QuestionTrackingScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .height(240.dp)
                     .padding(vertical = 4.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -7633,6 +8091,33 @@ fun QuestionTrackingScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Soru Günlüğü",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            if (filteredLogs.isEmpty()) {
+                Text(
+                    text = "Filtrelere uygun kayıt bulunamadı.",
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            } else {
+                filteredLogs.sortedByDescending { it.date }.forEach { log ->
+                    QuestionLogItem(
+                        log = log,
+                        onEdit = { editingLog = log },
+                        onDelete = { deletingLog = log }
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -7644,6 +8129,40 @@ fun QuestionTrackingScreen(
                 onSave = { subject, topic, correct, wrong ->
                     viewModel.addQuestionLog(subject, topic, correct, wrong)
                     showAddDialog = false
+                }
+            )
+        }
+
+        if (deletingLog != null) {
+            AlertDialog(
+                onDismissRequest = { deletingLog = null },
+                title = { Text("Kaydı Sil", fontWeight = FontWeight.Bold) },
+                text = { Text("Bu soru kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            deletingLog?.let { viewModel.deleteQuestionLog(it) }
+                            deletingLog = null
+                        }
+                    ) {
+                        Text("Sil", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { deletingLog = null }) {
+                        Text("İptal")
+                    }
+                }
+            )
+        }
+
+        if (editingLog != null) {
+            EditQuestionDialog(
+                log = editingLog!!,
+                onDismiss = { editingLog = null },
+                onSave = { correct, wrong ->
+                    editingLog?.let { viewModel.updateQuestionLog(it, correct, wrong) }
+                    editingLog = null
                 }
             )
         }

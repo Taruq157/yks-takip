@@ -128,8 +128,34 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            val customLightColors = lightColorScheme(
+                primary = Color(0xFFF65E72),
+                onPrimary = Color.White,
+                secondary = Color(0xFFFF9A8B),
+                background = Color(0xFFFAFAFA),
+                surface = Color(0xFFFFFFFF),
+                onBackground = Color(0xFF1A1A1A),
+                onSurface = Color(0xFF1A1A1A),
+                onSurfaceVariant = Color(0xFF6B7280),
+                primaryContainer = Color(0xFFFFECEE),
+                onPrimaryContainer = Color(0xFFF65E72)
+            )
+
+            val customDarkColors = darkColorScheme(
+                primary = Color(0xFFF65E72),
+                onPrimary = Color.White,
+                secondary = Color(0xFFFF9A8B),
+                background = Color(0xFF0F1115),
+                surface = Color(0xFF1A1D24),
+                onBackground = Color(0xFFEDEFF3),
+                onSurface = Color(0xFFEDEFF3),
+                onSurfaceVariant = Color(0xFF9CA3AF),
+                primaryContainer = Color(0xFF241619),
+                onPrimaryContainer = Color(0xFFF65E72)
+            )
+
             MaterialTheme(
-                colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme(),
+                colorScheme = if (isDarkTheme) customDarkColors else customLightColors,
                 typography = dynamicTypography
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
