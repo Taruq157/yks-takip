@@ -4287,113 +4287,104 @@ fun SnippetTypeBadge(type: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SnippetCard(
+ fun SnippetCard(
     snippet: com.omerfaruk.ykstakip.data.SupabaseSnippet,
     topic: com.omerfaruk.ykstakip.data.SupabaseTopic?,
     isStarred: Boolean,
     onStarClick: () -> Unit,
     onSubjectClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentVerticalPadding: androidx.compose.ui.unit.Dp = 55.dp,
+    titleTopPadding: androidx.compose.ui.unit.Dp = 100.dp
 ) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.8f)
-            .padding(end = 64.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
+        // 1. Top Section: Topic Title (Horizontally centered to the screen)
+        val topicTitle = topic?.title ?: "Genel Bilgi"
+        Text(
+            text = topicTitle,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = titleTopPadding, start = 16.dp, end = 16.dp)
+        )
+
+        // 2. Center Section: Snippet Content Text (fills available area with padding constraints)
+        val topLimit = titleTopPadding + 50.dp
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp)
+                .padding(start = 24.dp, end = 56.dp, top = topLimit, bottom = contentVerticalPadding),
+            contentAlignment = Alignment.Center
         ) {
-            // 1. En Üst Ortada: Hapın Türü (SnippetTypeBadge)
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 8.dp)
-            ) {
-                SnippetTypeBadge(type = snippet.type)
+            val contentLength = snippet.content.length
+            val calculatedFontSize = when {
+                contentLength < 80 -> 30.sp
+                contentLength < 150 -> 24.sp
+                contentLength < 220 -> 19.sp
+                contentLength < 300 -> 16.sp
+                else -> 13.sp
+            }
+            val calculatedLineHeight = when {
+                contentLength < 80 -> 42.sp
+                contentLength < 150 -> 34.sp
+                contentLength < 220 -> 28.sp
+                contentLength < 300 -> 22.sp
+                else -> 18.sp
             }
 
-            // 2. Ortada: Konu Başlığı ve Hap Bilgisi İçeriği
-            Column(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                if (topic != null) {
-                    Text(
-                        text = topic.title,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                } else {
-                    Text(
-                        text = "Bilinmeyen Konu",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                Text(
-                    text = parseMathText(snippet.content),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    lineHeight = 32.sp,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
+            Text(
+                text = parseMathText(snippet.content),
+                fontSize = calculatedFontSize,
+                fontWeight = FontWeight.Bold,
+                lineHeight = calculatedLineHeight,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
 
-            // 3. Sol Alta: Ders Etiketi ve Yıldızlama Simgesi
+        // 3. Bottom Section: Subject Label, SnippetTypeBadge & Star Icon
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 56.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             if (topic != null) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                    modifier = Modifier.clickable { onSubjectClick(topic.subjectName) }
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-                        modifier = Modifier.clickable { onSubjectClick(topic.subjectName) }
-                    ) {
-                        Text(
-                            text = "${topic.subjectName} (${topic.category})".uppercase(java.util.Locale.ROOT),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    
-                    IconButton(
-                        onClick = onStarClick,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (isStarred) Icons.Filled.Star else Icons.Filled.StarBorder,
-                            contentDescription = "Yıldızla",
-                            tint = if (isStarred) Color(0xFFFFD700) else MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    Text(
+                        text = "${topic.subjectName} (${topic.category})".uppercase(java.util.Locale.ROOT),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        textAlign = TextAlign.Center
+                    )
                 }
+            }
+
+            SnippetTypeBadge(type = snippet.type)
+
+            IconButton(
+                onClick = onStarClick,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = if (isStarred) Icons.Filled.Star else Icons.Filled.StarBorder,
+                    contentDescription = "Yıldızla",
+                    tint = if (isStarred) Color(0xFFFFD700) else MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.size(26.dp)
+                )
             }
         }
     }
@@ -4422,18 +4413,202 @@ fun HapScreen(
         viewModel.fetchAllRandomSnippets(onlyStarred = (selectedTab == "Yıldızlılar"))
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // En Üst Kısım: Genel ve Yıldızlılar Pill Selector (Ortalanmış)
+    val defaultBgColor = MaterialTheme.colorScheme.background
+    Box(modifier = Modifier.fillMaxSize().background(defaultBgColor)) {
+        if (isLoading && snippets.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                androidx.compose.material3.CircularProgressIndicator()
+            }
+        } else if (snippets.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = if (selectedTab == "Yıldızlılar") "Henüz yıldızlı dersiniz yok veya bu derslere ait hap bilgi bulunamadı." else "Şu an için hap bilgi bulunmuyor.",
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(32.dp)
+                )
+            }
+        } else {
+            val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { snippets.size })
+            
+            LaunchedEffect(selectedTab) {
+                try {
+                    pagerState.scrollToPage(0)
+                } catch (e: Exception) {}
+            }
+
+            androidx.compose.foundation.pager.VerticalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                val snippet = snippets[page]
+                val topic = topics.find { it.id == snippet.topicId }
+
+                val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+                val slideBgColor = when (snippet.type.lowercase(java.util.Locale.ROOT)) {
+                    "sinav_taktigi", "taktik" -> {
+                        if (isDark) Color(0xFF2E2614) else Color(0xFFFEF9E7)
+                    }
+                    "tavsiye", "rehberlik", "sinav_tavsiyesi", "sınav_tavsiyesi" -> {
+                        if (isDark) Color(0xFF142436) else Color(0xFFF0F7FF)
+                    }
+                    else -> {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(slideBgColor)
+                        .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 112.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val isStarred = followedSubjects.any { it.subjectName == topic?.subjectName && it.isFollowed }
+                    SnippetCard(
+                        snippet = snippet,
+                        topic = topic,
+                        isStarred = isStarred,
+                        onStarClick = { topic?.let { viewModel.toggleSubjectFollow(it.subjectName) } },
+                        onSubjectClick = onSubjectClick,
+                        contentVerticalPadding = 55.dp,
+                        titleTopPadding = 150.dp,
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    // Dikey Buton Kolonu (Beğen, Biliyorum, Kaydet, Bildir)
+                    val interaction = interactions.find { it.snippetId == snippet.id }
+                    val isLiked = interaction?.isLiked == true
+                    val isKnown = interaction?.isKnown == true
+                    val isSaved = interaction?.isSaved == true
+
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .width(56.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .background(
+                                        color = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
+                                        shape = CircleShape
+                                    )
+                                    .combinedClickable(
+                                        onClick = { viewModel.toggleSnippetLike(snippet.id, snippet.topicId, topic?.subjectName ?: "Genel") },
+                                        onLongClick = { onNavigateToLiked() }
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = "Beğen",
+                                    tint = if (isLiked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${snippet.likesCount}",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .background(
+                                        color = if (isKnown) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
+                                        shape = CircleShape
+                                    )
+                                    .combinedClickable(
+                                        onClick = { viewModel.toggleSnippetKnown(snippet.id, snippet.topicId, topic?.subjectName ?: "Genel") },
+                                        onLongClick = { onNavigateToKnown() }
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Biliyorum",
+                                    tint = if (isKnown) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${snippet.knowsCount}",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .background(
+                                        color = if (isSaved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
+                                        shape = CircleShape
+                                    )
+                                    .combinedClickable(
+                                        onClick = { viewModel.toggleSnippetSaved(snippet.id, snippet.topicId, topic?.subjectName ?: "Genel") },
+                                        onLongClick = { onNavigateToSaved() }
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (isSaved) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                                    contentDescription = "Kaydet",
+                                    tint = if (isSaved) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${snippet.savesCount}",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(
+                            onClick = { showReportDialogForSnippetId = snippet.id },
+                            modifier = Modifier
+                                .size(44.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
+                                    shape = CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Report,
+                                contentDescription = "Bildir",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Floating Pill Selector at the Top!
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(top = 12.dp, bottom = 8.dp),
+                .padding(top = 12.dp, bottom = 8.dp)
+                .align(Alignment.TopCenter),
             contentAlignment = Alignment.Center
         ) {
             Row(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(24.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f), RoundedCornerShape(24.dp))
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
@@ -4464,173 +4639,6 @@ fun HapScreen(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
-                    }
-                }
-            }
-        }
-
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            if (isLoading && snippets.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    androidx.compose.material3.CircularProgressIndicator()
-                }
-            } else if (snippets.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = if (selectedTab == "Yıldızlılar") "Henüz yıldızlı dersiniz yok veya bu derslere ait hap bilgi bulunamadı." else "Şu an için hap bilgi bulunmuyor.",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(32.dp)
-                    )
-                }
-            } else {
-                val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { snippets.size })
-                
-                LaunchedEffect(selectedTab) {
-                    try {
-                        pagerState.scrollToPage(0)
-                    } catch (e: Exception) {}
-                }
-
-                androidx.compose.foundation.pager.VerticalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize().padding(bottom = 80.dp) // Leave space for Bottom Navigation
-                ) { page ->
-                    val snippet = snippets[page]
-                    val topic = topics.find { it.id == snippet.topicId }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val isStarred = followedSubjects.any { it.subjectName == topic?.subjectName && it.isFollowed }
-                        SnippetCard(
-                            snippet = snippet,
-                            topic = topic,
-                            isStarred = isStarred,
-                            onStarClick = { topic?.let { viewModel.toggleSubjectFollow(it.subjectName) } },
-                            onSubjectClick = onSubjectClick
-                        )
-
-                        // Dikey Buton Kolonu (Beğen, Biliyorum, Kaydet, Bildir)
-                        val interaction = interactions.find { it.snippetId == snippet.id }
-                        val isLiked = interaction?.isLiked == true
-                        val isKnown = interaction?.isKnown == true
-                        val isSaved = interaction?.isSaved == true
-
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .width(56.dp),
-                            verticalArrangement = Arrangement.spacedBy(20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .background(
-                                            color = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
-                                            shape = CircleShape
-                                        )
-                                        .combinedClickable(
-                                            onClick = { viewModel.toggleSnippetLike(snippet.id, snippet.topicId, topic?.subjectName ?: "Genel") },
-                                            onLongClick = { onNavigateToLiked() }
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                        contentDescription = "Beğen",
-                                        tint = if (isLiked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "${snippet.likesCount}",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .background(
-                                            color = if (isKnown) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
-                                            shape = CircleShape
-                                        )
-                                        .combinedClickable(
-                                            onClick = { viewModel.toggleSnippetKnown(snippet.id, snippet.topicId, topic?.subjectName ?: "Genel") },
-                                            onLongClick = { onNavigateToKnown() }
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = "Biliyorum",
-                                        tint = if (isKnown) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "${snippet.knowsCount}",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .background(
-                                            color = if (isSaved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
-                                            shape = CircleShape
-                                        )
-                                        .combinedClickable(
-                                            onClick = { viewModel.toggleSnippetSaved(snippet.id, snippet.topicId, topic?.subjectName ?: "Genel") },
-                                            onLongClick = { onNavigateToSaved() }
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = if (isSaved) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                                        contentDescription = "Kaydet",
-                                        tint = if (isSaved) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "${snippet.savesCount}",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            IconButton(
-                                onClick = { showReportDialogForSnippetId = snippet.id },
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
-                                        shape = CircleShape
-                                    )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Report,
-                                    contentDescription = "Bildir",
-                                    tint = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                        }
                     }
                 }
             }
@@ -4755,10 +4763,24 @@ fun SubjectSnippetsScreen(
                 val snippet = filteredSnippets[page]
                 val topic = subjectTopics.find { it.id == snippet.topicId }
 
+                val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+                val slideBgColor = when (snippet.type.lowercase(java.util.Locale.ROOT)) {
+                    "sinav_taktigi", "taktik" -> {
+                        if (isDark) Color(0xFF2E2614) else Color(0xFFFEF9E7)
+                    }
+                    "tavsiye", "rehberlik", "sinav_tavsiyesi", "sınav_tavsiyesi" -> {
+                        if (isDark) Color(0xFF142436) else Color(0xFFF0F7FF)
+                    }
+                    else -> {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                    }
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .background(slideBgColor)
+                        .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     val isStarred = followedSubjects.any { it.subjectName == topic?.subjectName && it.isFollowed }
@@ -4767,7 +4789,10 @@ fun SubjectSnippetsScreen(
                         topic = topic,
                         isStarred = isStarred,
                         onStarClick = { topic?.let { viewModel.toggleSubjectFollow(it.subjectName) } },
-                        onSubjectClick = {}
+                        onSubjectClick = {},
+                        contentVerticalPadding = 55.dp,
+                        titleTopPadding = 130.dp,
+                        modifier = Modifier.fillMaxSize()
                     )
 
                     // Dikey Buton Kolonu (Beğen, Biliyorum, Kaydet, Bildir)
@@ -4778,7 +4803,7 @@ fun SubjectSnippetsScreen(
 
                     Column(
                         modifier = Modifier
-                            .align(Alignment.CenterEnd)
+                            .align(Alignment.BottomEnd)
                             .width(56.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -6576,10 +6601,24 @@ fun SavedSnippetsScreen(
                 val snippet = savedSnippets[page]
                 val topic = topics.find { it.id == snippet.topicId }
 
+                val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+                val slideBgColor = when (snippet.type.lowercase(java.util.Locale.ROOT)) {
+                    "sinav_taktigi", "taktik" -> {
+                        if (isDark) Color(0xFF2E2614) else Color(0xFFFEF9E7)
+                    }
+                    "tavsiye", "rehberlik", "sinav_tavsiyesi", "sınav_tavsiyesi" -> {
+                        if (isDark) Color(0xFF142436) else Color(0xFFF0F7FF)
+                    }
+                    else -> {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                    }
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .background(slideBgColor)
+                        .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     val isStarred = followedSubjects.any { it.subjectName == topic?.subjectName && it.isFollowed }
@@ -6588,7 +6627,10 @@ fun SavedSnippetsScreen(
                         topic = topic,
                         isStarred = isStarred,
                         onStarClick = { topic?.let { viewModel.toggleSubjectFollow(it.subjectName) } },
-                        onSubjectClick = {}
+                        onSubjectClick = {},
+                        contentVerticalPadding = 55.dp,
+                        titleTopPadding = 130.dp,
+                        modifier = Modifier.fillMaxSize()
                     )
 
                     // Dikey Buton Kolonu (Beğen, Biliyorum, Kaydet, Bildir)
@@ -6599,7 +6641,7 @@ fun SavedSnippetsScreen(
 
                     Column(
                         modifier = Modifier
-                            .align(Alignment.CenterEnd)
+                            .align(Alignment.BottomEnd)
                             .width(56.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -6891,10 +6933,24 @@ fun LikedSnippetsScreen(
                 val snippet = likedSnippets[page]
                 val topic = topics.find { it.id == snippet.topicId }
 
+                val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+                val slideBgColor = when (snippet.type.lowercase(java.util.Locale.ROOT)) {
+                    "sinav_taktigi", "taktik" -> {
+                        if (isDark) Color(0xFF2E2614) else Color(0xFFFEF9E7)
+                    }
+                    "tavsiye", "rehberlik", "sinav_tavsiyesi", "sınav_tavsiyesi" -> {
+                        if (isDark) Color(0xFF142436) else Color(0xFFF0F7FF)
+                    }
+                    else -> {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                    }
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .background(slideBgColor)
+                        .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     val isStarred = followedSubjects.any { it.subjectName == topic?.subjectName && it.isFollowed }
@@ -6903,7 +6959,10 @@ fun LikedSnippetsScreen(
                         topic = topic,
                         isStarred = isStarred,
                         onStarClick = { topic?.let { viewModel.toggleSubjectFollow(it.subjectName) } },
-                        onSubjectClick = {}
+                        onSubjectClick = {},
+                        contentVerticalPadding = 55.dp,
+                        titleTopPadding = 130.dp,
+                        modifier = Modifier.fillMaxSize()
                     )
 
                     // Dikey Buton Kolonu (Beğen, Biliyorum, Kaydet, Bildir)
@@ -6914,7 +6973,7 @@ fun LikedSnippetsScreen(
 
                     Column(
                         modifier = Modifier
-                            .align(Alignment.CenterEnd)
+                            .align(Alignment.BottomEnd)
                             .width(56.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -7206,10 +7265,24 @@ fun KnownSnippetsScreen(
                 val snippet = knownSnippets[page]
                 val topic = topics.find { it.id == snippet.topicId }
 
+                val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+                val slideBgColor = when (snippet.type.lowercase(java.util.Locale.ROOT)) {
+                    "sinav_taktigi", "taktik" -> {
+                        if (isDark) Color(0xFF2E2614) else Color(0xFFFEF9E7)
+                    }
+                    "tavsiye", "rehberlik", "sinav_tavsiyesi", "sınav_tavsiyesi" -> {
+                        if (isDark) Color(0xFF142436) else Color(0xFFF0F7FF)
+                    }
+                    else -> {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                    }
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .background(slideBgColor)
+                        .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     val isStarred = followedSubjects.any { it.subjectName == topic?.subjectName && it.isFollowed }
@@ -7218,7 +7291,10 @@ fun KnownSnippetsScreen(
                         topic = topic,
                         isStarred = isStarred,
                         onStarClick = { topic?.let { viewModel.toggleSubjectFollow(it.subjectName) } },
-                        onSubjectClick = {}
+                        onSubjectClick = {},
+                        contentVerticalPadding = 55.dp,
+                        titleTopPadding = 130.dp,
+                        modifier = Modifier.fillMaxSize()
                     )
 
                     // Dikey Buton Kolonu (Beğen, Biliyorum, Kaydet, Bildir)
@@ -7229,7 +7305,7 @@ fun KnownSnippetsScreen(
 
                     Column(
                         modifier = Modifier
-                            .align(Alignment.CenterEnd)
+                            .align(Alignment.BottomEnd)
                             .width(56.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
