@@ -2,9 +2,9 @@
 
 # 📚 YKS Takip
 
-**YKS sınavına hazırlık sürecini profesyonelce yönetmenizi sağlayan kapsamlı Android uygulaması.**
+**A comprehensive Android app for professionally managing your YKS (Turkish University Entrance Exam) preparation process.**
 
-Konu takibi, net hesaplama, çalışma süreleri, Pomodoro zamanlayıcı, AI motivasyon koçu ve daha fazlası — hepsi tek bir uygulamada.
+Topic tracking, net score calculation, study timers, Pomodoro, AI motivation coach, and more — all in one app.
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-Material3-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
@@ -20,10 +20,10 @@ Konu takibi, net hesaplama, çalışma süreleri, Pomodoro zamanlayıcı, AI mot
 
 ## 📸 Screenshots
 
-> ⚠️ Ekran görüntüleri yakında eklenecektir.
+> ⚠️ Screenshots will be added soon.
 
 <!--
-Ekran görüntülerini `screenshots/` klasörüne ekledikten sonra aşağıdaki satırları aktif edin:
+After adding screenshots to the `screenshots/` folder, uncomment the lines below:
 
 <div align="center">
   <img src="screenshots/dashboard.png" width="200" />
@@ -37,81 +37,81 @@ Ekran görüntülerini `screenshots/` klasörüne ekledikten sonra aşağıdaki 
 
 ## ✨ Features
 
-### 📋 Konu Takip Sistemi
-- **TYT & AYT** tüm derslerin konuları önceden yüklenmiş (Matematik, Fizik, Kimya, Biyoloji, Türkçe, Geometri, Tarih, Coğrafya, Felsefe, Edebiyat, Din Kültürü ve dahası)
-- **Sayısal, Eşit Ağırlık ve Sözel** alan desteği
-- Konu tamamlama durumunu işaretle, genel ilerlemeyi takip et
-- Ders bazlı ilerleme çubukları ve yüzde gösterimi
+### 📋 Topic Tracking System
+- All **TYT & AYT** subject topics are pre-loaded (Mathematics, Physics, Chemistry, Biology, Turkish, Geometry, History, Geography, Philosophy, Literature, Religious Studies, and more)
+- Support for **Science (Sayısal), Equal Weight (Eşit Ağırlık), and Verbal (Sözel)** tracks
+- Mark topics as completed and track overall progress
+- Per-subject progress bars with percentage indicators
 
-### ⏱️ Pomodoro & Kronometre
-- Yerleşik Pomodoro zamanlayıcısı ile odaklanma seansları
-- Ayrı kronometre modu
-- Çalışma sürelerini ders ve konu bazlı kaydetme
-- Geçmiş çalışma istatistikleri
+### ⏱️ Pomodoro & Stopwatch
+- Built-in Pomodoro timer for focused study sessions
+- Separate stopwatch mode
+- Save study durations by subject and topic
+- Historical study statistics
 
-### 📊 Net Takibi & Sıralama Hesaplama
-- TYT, AYT ve branş bazlı net sonuçlarını kaydetme
-- Net gelişim grafiği ile ilerlemenizi görselleştirme
-- **YKS sıralama hesaplama** — OBP, TYT ve AYT netleriyle tahmini sıralama
-- Yığılma verileri ile desteklenen hesaplamalar (Supabase üzerinden)
-- Hesaplama geçmişi
+### 📊 Net Score Tracking & Rank Estimation
+- Record net scores for TYT, AYT, and individual subjects
+- Visualize your progress with net score trend charts
+- **YKS rank estimation** — calculate estimated ranking using GPA (OBP), TYT and AYT net scores
+- Calculations supported by historical score distribution data (via Supabase)
+- Calculation history
 
-### ❌ Yanlış Soru Takibi
-- Yanlış soruların fotoğrafını çekerek kaydetme
-- Ders ve sınav türüne göre (TYT/AYT) filtreleme
-- Çözüldü olarak işaretleme
+### ❌ Wrong Question Tracker
+- Take photos of wrong questions and save them
+- Filter by subject and exam type (TYT/AYT)
+- Mark as solved
 
-### 💊 Hap Bilgi (Knowledge Snippets)
-- Supabase'deki konu tabanlı kısa bilgi kartları
-- Beğen, Biliyorum ve Kaydet etkileşimleri
-- Ders bazlı snippet filtreleme
-- Kaydedilenler, beğenilenler ve bilinenler ayrı ekranlarda
+### 💊 Knowledge Snippets (Hap Bilgi)
+- Topic-based short knowledge cards from Supabase
+- Like, Mark as Known, and Save interactions
+- Filter snippets by subject
+- Separate screens for saved, liked, and known snippets
 
-### 🤖 AI Motivasyon Koçu
-- **Gemini 1.5 Flash** ile kişiselleştirilmiş motivasyon mesajları
-- İlerleme durumunuza göre dinamik öneriler
-- Kullanıcıya belirlediği hitap şekliyle seslenme
+### 🤖 AI Motivation Coach
+- Personalized motivation messages powered by **Gemini 1.5 Flash**
+- Dynamic suggestions based on your current progress
+- Addresses the user with their preferred title
 
-> **Not:** Gemini AI özelliği henüz geliştirme aşamasındadır ve tam stabil çalışmayabilir. Kullanmak için `local.properties` dosyasına `GEMINI_API_KEY` eklenmelidir.
+> **Note:** The Gemini AI feature is still under development and may not be fully stable. To use it, add `GEMINI_API_KEY` to your `local.properties` file.
 
-### 🔔 Bildirim Sistemi
-- Gün ve saat bazlı özelleştirilebilir hatırlatıcılar
-- YKS'ye kalan gün sayısını gösteren bildirimler
-- Haftalık tekrarlayan alarm desteği
+### 🔔 Notification System
+- Customizable reminders by day and time
+- Notifications showing days remaining until YKS
+- Weekly recurring alarm support
 
-### 🎖️ Ödül / Başarım Sistemi
-- Konu tamamlama ve çalışma hedeflerine göre otomatik ödüller
-- Acemi → Tecrübeli → Uzman seviyeleri
-- Yeni ödül kazanıldığında Toast bildirimi
+### 🎖️ Achievement / Reward System
+- Automatic rewards based on topic completion and study goals
+- Beginner → Experienced → Expert levels
+- Toast notification when a new reward is earned
 
-### 👤 Profil & Ayarlar
-- Kullanıcı profili: Ad, soyad, unvan, alan, sınav yılı, OBP
-- Kişiselleştirilebilir hitap şekli (ör: "Mühendis Faruk")
-- Light / Dark / System tema desteği
-- Ayarlanabilir yazı boyutu
-- Veri sıfırlama
+### 👤 Profile & Settings
+- User profile: First name, last name, title, track, exam year, GPA (OBP)
+- Customizable display name (e.g., "Engineer Faruk")
+- Light / Dark / System theme support
+- Adjustable font size
+- Data reset
 
-### ☁️ Bulut Senkronizasyonu
-- Supabase Auth ile kullanıcı kimlik doğrulama
-- Konu ilerlemeleri, çalışma süreleri, net sonuçları, snippet etkileşimleri buluta yedeklenir
-- Cihaz değişikliğinde veriler otomatik geri yüklenir
+### ☁️ Cloud Sync
+- User authentication via Supabase Auth
+- Topic progress, study times, net scores, and snippet interactions are backed up to the cloud
+- Data is automatically restored on device change
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Katman | Teknoloji |
-|--------|-----------|
-| **Dil** | Kotlin |
+| Layer | Technology |
+|-------|------------|
+| **Language** | Kotlin |
 | **UI Framework** | Jetpack Compose + Material 3 |
-| **Mimari** | MVVM (ViewModel + StateFlow) |
-| **Lokal Veritabanı** | Room (SQLite) |
-| **Tercihler** | DataStore Preferences |
+| **Architecture** | MVVM (ViewModel + StateFlow) |
+| **Local Database** | Room (SQLite) |
+| **Preferences** | DataStore Preferences |
 | **Backend / Auth** | Supabase (PostgreSQL + GoTrue Auth) |
 | **AI** | Google Gemini 1.5 Flash |
 | **Navigation** | Jetpack Navigation Compose |
 | **Splash Screen** | AndroidX Core Splash Screen |
-| **Bildirimler** | AlarmManager + NotificationManager |
+| **Notifications** | AlarmManager + NotificationManager |
 | **Min SDK** | 27 (Android 8.1) |
 | **Target SDK** | 35 |
 
@@ -119,45 +119,45 @@ Ekran görüntülerini `screenshots/` klasörüne ekledikten sonra aşağıdaki 
 
 ## 🏗️ Architecture / Technical Details
 
-Proje **MVVM (Model-View-ViewModel)** mimarisini takip eder ve tamamen **Jetpack Compose** ile oluşturulmuştur.
+The project follows the **MVVM (Model-View-ViewModel)** architecture and is built entirely with **Jetpack Compose**.
 
 ```
 com.omerfaruk.ykstakip/
-├── MainActivity.kt              # Navigation host, tema, factory
+├── MainActivity.kt              # Navigation host, theming, factory
 ├── ai/
-│   └── GeminiService.kt         # Gemini AI motivasyon servisi
+│   └── GeminiService.kt         # Gemini AI motivation service
 ├── data/
 │   ├── SupabaseRepository.kt    # Supabase REST API (Auth, CRUD, Sync)
 │   ├── local/
-│   │   ├── YksDatabase.kt       # Room DB, Entity'ler, DAO
-│   │   ├── PreferenceManager.kt # DataStore ile tercihler & auth token
-│   │   ├── Reward.kt            # Ödül data class
+│   │   ├── YksDatabase.kt       # Room DB, Entities, DAO
+│   │   ├── PreferenceManager.kt # DataStore preferences & auth tokens
+│   │   ├── Reward.kt            # Reward data class
 │   │   └── CalculationHistoryEntity.kt
 │   └── model/
-│       └── Models.kt            # Subject & Topic domain modelleri
+│       └── Models.kt            # Subject & Topic domain models
 ├── notification/
-│   ├── NotificationHelper.kt    # Alarm planlama & kanal oluşturma
+│   ├── NotificationHelper.kt    # Alarm scheduling & channel creation
 │   └── NotificationReceiver.kt  # BroadcastReceiver
 └── ui/
-    ├── Screens.kt               # Tüm Composable ekranlar (~8200 satır)
-    └── YksViewModel.kt          # İş mantığı, state yönetimi, sync
+    ├── Screens.kt               # All Composable screens (~8200 lines)
+    └── YksViewModel.kt          # Business logic, state management, sync
 ```
 
-### Öne Çıkan Teknik Detaylar
+### Key Technical Highlights
 
-- **Çift Katmanlı Veri Stratejisi:** Offline-first yaklaşım. Veriler önce Room'a yazılır, ardından Supabase'e senkronize edilir. Uygulama açıldığında buluttan geri yükleme yapılır.
-- **Supabase REST API:** HTTP bağlantıları `HttpURLConnection` ile doğrudan yapılır — ek SDK bağımlılığı yok.
-- **Reactive UI:** `StateFlow` ve `Flow` ile tüm veri değişiklikleri gerçek zamanlı olarak UI'ya yansır.
-- **Dinamik Tipografi:** Kullanıcı font boyutu çarpanını ayarlayabilir, tüm `Typography` seviyelerine uygulanır.
-- **Güvenli API Key Yönetimi:** Hassas anahtarlar `local.properties` → `BuildConfig` üzerinden derleme zamanında enjekte edilir; kaynak kodda hiçbir secret hardcode edilmez.
+- **Dual-Layer Data Strategy:** Offline-first approach. Data is written to Room first, then synced to Supabase. On app launch, data is restored from the cloud.
+- **Supabase REST API:** HTTP connections are made directly via `HttpURLConnection` — no additional SDK dependency required.
+- **Reactive UI:** All data changes are reflected in the UI in real-time via `StateFlow` and `Flow`.
+- **Dynamic Typography:** Users can adjust the font size multiplier, which is applied across all `Typography` levels.
+- **Secure API Key Management:** Sensitive keys are injected at compile time via `local.properties` → `BuildConfig`; no secrets are hardcoded in the source code.
 
 ---
 
 ## 🗄️ Database
 
-### Lokal Veritabanı (Room)
+### Local Database (Room)
 
-Uygulama 8 tabloluk bir Room (SQLite) veritabanı kullanır:
+The app uses a Room (SQLite) database with 8 tables:
 
 ```
 ┌─────────────────────┐     ┌──────────────────────┐
@@ -206,110 +206,110 @@ Uygulama 8 tabloluk bir Room (SQLite) veritabanı kullanır:
 └──────────────────────┘
 ```
 
-### Bulut Veritabanı (Supabase / PostgreSQL)
+### Cloud Database (Supabase / PostgreSQL)
 
-Supabase üzerinde aşağıdaki tablolar mevcuttur:
+The following tables exist on Supabase:
 
-| Tablo | Açıklama |
-|-------|----------|
-| `topics` | TYT/AYT konu havuzu |
-| `snippets` | Konu bazlı bilgi kartları (Hap Bilgi) |
-| `profiles` | Kullanıcı profil bilgileri |
-| `user_topic_progress` | Konu tamamlama ilerlemeleri |
-| `user_study_times` | Çalışma süreleri |
-| `user_net_results` | Net sonuçları |
-| `user_calculations` | Sıralama hesaplama geçmişi |
-| `user_snippet_interactions` | Snippet beğeni/kaydet/biliyorum |
-| `user_followed_subjects` | Takip edilen dersler |
-| `user_question_logs` | Soru çözüm logları |
-| `yigilma_verileri` | Yığılma/sıralama verileri |
+| Table | Description |
+|-------|-------------|
+| `topics` | TYT/AYT topic pool |
+| `snippets` | Topic-based knowledge cards |
+| `profiles` | User profile information |
+| `user_topic_progress` | Topic completion progress |
+| `user_study_times` | Study durations |
+| `user_net_results` | Net score results |
+| `user_calculations` | Rank estimation history |
+| `user_snippet_interactions` | Snippet like/save/known |
+| `user_followed_subjects` | Followed subjects |
+| `user_question_logs` | Question solving logs |
+| `yigilma_verileri` | Historical score distribution data |
 
-> ⚠️ **Güvenlik Notu:** Supabase URL, API Key, Gemini API Key gibi hassas bilgiler `local.properties` dosyasında tutulur ve `.gitignore` ile versiyon kontrolünden hariç tutulmuştur. Bu repo'da hiçbir secret paylaşılmamaktadır.
+> ⚠️ **Security Note:** Sensitive information such as Supabase URL, API Key, and Gemini API Key are stored in `local.properties` and excluded from version control via `.gitignore`. No secrets are shared in this repository.
 
 ---
 
 ## 🚀 Installation
 
-### Gereksinimler
-- Android Studio Koala (2024.1.1) veya üzeri
+### Prerequisites
+- Android Studio Koala (2024.1.1) or later
 - JDK 11+
 - Android SDK 35
-- Minimum SDK 27 destekli bir cihaz veya emülatör
+- A device or emulator supporting Min SDK 27
 
-### Adımlar
+### Steps
 
 ```bash
-# 1. Repoyu klonlayın
+# 1. Clone the repository
 git clone https://github.com/Taruq157/yks-takip.git
 cd yks-takip
 
-# 2. local.properties dosyasını oluşturun
-#    (Bu dosya .gitignore'da olduğu için repoda yer almaz)
+# 2. Create the local.properties file
+#    (This file is in .gitignore and is not included in the repo)
 ```
 
-`local.properties` dosyasına aşağıdaki anahtarları ekleyin:
+Add the following keys to `local.properties`:
 
 ```properties
-sdk.dir=C\:\\Users\\KULLANICI_ADINIZ\\AppData\\Local\\Android\\Sdk
+sdk.dir=C\:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\Sdk
 
-# Supabase (zorunlu — bulut senkronizasyonu ve auth için)
+# Supabase (required — for cloud sync and authentication)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your_supabase_anon_key
 
-# Gemini AI (opsiyonel — motivasyon koçu özelliği için)
+# Gemini AI (optional — for the motivation coach feature)
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
 ```bash
-# 3. Projeyi build edin ve çalıştırın
-#    Android Studio'da "Run" butonuna basın
-#    veya terminal üzerinden:
+# 3. Build and run the project
+#    Press the "Run" button in Android Studio
+#    or via terminal:
 ./gradlew assembleDebug
 ```
 
-> **Not:** Supabase anahtarları olmadan uygulama çalışır ancak bulut senkronizasyonu ve auth özellikleri devre dışı kalır. Gemini API Key olmadan AI motivasyon özelliği fallback mesajlar gösterir.
+> **Note:** The app will run without Supabase keys, but cloud sync and auth features will be disabled. Without a Gemini API Key, the AI motivation feature will show fallback messages.
 
 ---
 
-## 📱 Ekranlar
+## 📱 Screens
 
-| Ekran | Açıklama |
-|-------|----------|
-| `AuthScreen` | Supabase giriş/kayıt ekranı |
-| `OnboardingScreen` | Profil oluşturma (ad, alan, unvan, sınav yılı) |
-| `MainDashboard` | Ana ekran — ilerleme, dersler, AI motivasyon |
-| `SubjectDetailScreen` | Ders konuları ve tamamlama durumları |
-| `HapScreen` | Bilgi kartları (snippets) ana ekranı |
-| `SubjectSnippetsScreen` | Ders bazlı snippet listesi |
-| `ProfileScreen` | Kullanıcı profili ve ödüller |
-| `PomodoroScreen` | Pomodoro zamanlayıcısı |
-| `StopwatchScreen` | Kronometre |
-| `NetTrackingScreen` | Net sonuçları takibi |
-| `ScoreCalculationScreen` | YKS sıralama hesaplama |
-| `WrongQuestionsScreen` | Yanlış soru takibi |
-| `ExamTimerScreen` | Sınav zamanlayıcısı |
-| `QuestionTrackingScreen` | Soru çözüm takibi |
-| `SettingsScreen` | Tema, font, bildirim, veri sıfırlama |
-| `RewardsScreen` | Başarım / ödül galerisi |
+| Screen | Description |
+|--------|-------------|
+| `AuthScreen` | Supabase login / registration |
+| `OnboardingScreen` | Profile setup (name, track, title, exam year) |
+| `MainDashboard` | Home — progress overview, subjects, AI motivation |
+| `SubjectDetailScreen` | Subject topics and completion status |
+| `HapScreen` | Knowledge snippets main screen |
+| `SubjectSnippetsScreen` | Subject-based snippet list |
+| `ProfileScreen` | User profile and achievements |
+| `PomodoroScreen` | Pomodoro timer |
+| `StopwatchScreen` | Stopwatch |
+| `NetTrackingScreen` | Net score tracking |
+| `ScoreCalculationScreen` | YKS rank estimation |
+| `WrongQuestionsScreen` | Wrong question tracker |
+| `ExamTimerScreen` | Exam timer |
+| `QuestionTrackingScreen` | Question solving tracker |
+| `SettingsScreen` | Theme, font, notifications, data reset |
+| `RewardsScreen` | Achievement / reward gallery |
 
 ---
 
 ## 🤝 Contributing
 
-Pull request'ler memnuniyetle karşılanır. Büyük değişiklikler için lütfen önce bir issue açarak neyi değiştirmek istediğinizi tartışın.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 
 ## 📄 License
 
-Bu proje [MIT](LICENSE) lisansı ile lisanslanmıştır.
+This project is licensed under the [MIT](LICENSE) License.
 
 ---
 
 <div align="center">
 
-**YKS Takip** ile hedefine bir adım daha yaklaş! 🎯
+**YKS Takip** — Get one step closer to your goal! 🎯
 
-*Geliştirici: [Ömer Faruk](https://github.com/Taruq157)*
+*Developer: [Ömer Faruk](https://github.com/Taruq157)*
 
 </div>
